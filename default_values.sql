@@ -1,4 +1,4 @@
-create type status_enum as enum('OPEN', 'ORDERED')
+create TYPE status_enum AS ENUM('OPEN', 'ORDERED')
 
 create table if not exists carts (
 	id uuid primary key default uuid_generate_v4(),
@@ -15,7 +15,22 @@ create table if not exists cart_items (
 	foreign key ("cart_id") references "carts" ("id")
 )
 
+create table if not exists orders (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null,
+  cart_id uuid not null,
+  payment JSON not null,
+  delivery JSON not null,
+  comments text not null,
+  status text not null,
+  total numeric not null,
+  foreign key ("cart_id") references "carts"
+)
 
+INSERT INTO orders (user_id, cart_id, payment, delivery, comments, status, total)
+VALUES
+  ('1ba4c819-46d1-4d75-92e8-836cc52fd0c7', '7ba7af0b-dc44-49de-a8a8-fabffcf5d058', '{"type": "credit card", "number": "4111111111111111", "expiry": "12/2025", "cvv": "123"}', '{"address": "123 Main St", "city": "Anytown", "state": "CA", "zip": "12345"}', 'No comments', 'PENDING', 200.50),
+  ('2d335a01-845a-412c-9c2a-e1c48a37b46a', '26335d36-8dbc-4418-8e67-0dffe7e55d4a', '{"type": "paypal", "account": "user@example.com"}', '{"address": "", "city": "", "state": "", "zip": ""}', 'Fast delivery requested', 'SHIPPED', 500.00)
 
 create extension if not exists "uuid-ossp"
 
